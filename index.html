@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debotz UP — File Sharing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://res.cloudinary.com/dwpnsfghy/image/upload/v1776914133/l740v9oycdikv4dc0omb.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #080c14;
+        --surface: #0d1422;
+        --surface2: #111927;
+        --border: rgba(99, 179, 237, 0.12);
+        --accent: #3ecfcf;
+        --accent2: #7c6fff;
+        --accent3: #ff6b8a;
+        --text: #e8f0fe;
+        --muted: #6b7fa3;
+        --glow: rgba(62, 207, 207, 0.18);
+        --glow2: rgba(124, 111, 255, 0.15);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(62, 207, 207, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(62, 207, 207, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .orb1 {
+        width: 500px;
+        height: 500px;
+        background: var(--glow2);
+        top: -120px;
+        left: -80px;
+      }
+      .orb2 {
+        width: 400px;
+        height: 400px;
+        background: var(--glow);
+        bottom: 0;
+        right: -100px;
+      }
+      .wrapper {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 60px;
+        padding: 16px 24px;
+        background: rgba(13, 20, 34, 0.7);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 0 24px var(--glow);
+        flex-shrink: 0;
+      }
+      .logo-text {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 22px;
+        letter-spacing: -0.5px;
+      }
+      .logo-text span {
+        color: var(--accent);
+      }
+      .logo-tagline {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .header-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(62, 207, 207, 0.08);
+        border: 1px solid rgba(62, 207, 207, 0.2);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: var(--accent);
+      }
+      .pulse-dot {
+        width: 7px;
+        height: 7px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: pulse 1.8s ease-in-out infinite;
+        box-shadow: 0 0 8px var(--accent);
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.8);
+        }
+      }
+
+      .dev-badge {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(255, 200, 60, 0.07);
+        border: 1px solid rgba(255, 200, 60, 0.22);
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-size: 12px;
+        color: #ffc83c;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        text-align: center;
+      }
+      .dev-badge.show {
+        display: flex;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .hero h1 {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: clamp(32px, 6vw, 54px);
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin-bottom: 12px;
+      }
+      .hero h1 .line1 {
+        color: var(--text);
+      }
+      .hero h1 .line2 {
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+
+      .upload-zone {
+        border: 2px dashed rgba(62, 207, 207, 0.25);
+        border-radius: 24px;
+        padding: 56px 32px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(13, 20, 34, 0.5);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 32px;
+      }
+      .upload-zone::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(62, 207, 207, 0.04) 0%,
+          transparent 70%
+        );
+        transition: opacity 0.3s;
+        opacity: 0;
+      }
+      .upload-zone.drag-over,
+      .upload-zone:hover {
+        border-color: var(--accent);
+        background: rgba(62, 207, 207, 0.04);
+      }
+      .upload-zone.drag-over::before,
+      .upload-zone:hover::before {
+        opacity: 1;
+      }
+      .upload-zone.drag-over {
+        box-shadow: 0 0 40px var(--glow),
+          inset 0 0 40px rgba(62, 207, 207, 0.03);
+        transform: scale(1.005);
+      }
+      .upload-icon {
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(
+          135deg,
+          rgba(62, 207, 207, 0.12),
+          rgba(124, 111, 255, 0.12)
+        );
+        border: 1px solid rgba(62, 207, 207, 0.2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 32px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .upload-zone:hover .upload-icon {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px var(--glow);
+      }
+      .upload-zone h2 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+      .upload-zone p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 24px;
+      }
+      .btn-upload {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #000;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        padding: 12px 28px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.25s;
+        letter-spacing: 0.3px;
+      }
+      .btn-upload:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px var(--glow);
+        filter: brightness(1.1);
+      }
+      #fileInput {
+        display: none;
+      }
+
+      .progress-wrap {
+        display: none;
+        margin-bottom: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px 24px;
+      }
+      .progress-wrap.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+      .progress-filename {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .progress-pct {
+        color: var(--accent);
+      }
+      .progress-bar-bg {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 99px;
+        width: 0%;
+        transition: width 0.3s;
+        box-shadow: 0 0 12px var(--glow);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 20px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateY(80px);
+        opacity: 0;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 999;
+        max-width: 340px;
+        backdrop-filter: blur(20px);
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.success {
+        border-color: rgba(62, 207, 207, 0.4);
+      }
+      .toast.error {
+        border-color: rgba(255, 107, 138, 0.4);
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .section-title .icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(62, 207, 207, 0.1);
+        border: 1px solid rgba(62, 207, 207, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+      }
+      .section-badge {
+        margin-left: auto;
+        background: rgba(124, 111, 255, 0.12);
+        border: 1px solid rgba(124, 111, 255, 0.25);
+        color: var(--accent2);
+        font-size: 11px;
+        font-family: "DM Mono", monospace;
+        padding: 2px 10px;
+        border-radius: 20px;
+      }
+
+      #fileList {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .file-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px 20px;
+        display: grid;
+        grid-template-columns: 48px 1fr auto;
+        gap: 14px;
+        align-items: center;
+        animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .file-card:hover {
+        border-color: rgba(62, 207, 207, 0.25);
+        transform: translateY(-1px);
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .file-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .file-thumb.img {
+        background: rgba(255, 107, 138, 0.1);
+        border: 1px solid rgba(255, 107, 138, 0.2);
+      }
+      .file-thumb.vid {
+        background: rgba(124, 111, 255, 0.1);
+        border: 1px solid rgba(124, 111, 255, 0.2);
+      }
+      .file-thumb.doc {
+        background: rgba(62, 207, 207, 0.1);
+        border: 1px solid rgba(62, 207, 207, 0.2);
+      }
+      .file-thumb.zip {
+        background: rgba(255, 200, 60, 0.1);
+        border: 1px solid rgba(255, 200, 60, 0.2);
+      }
+      .file-thumb.other {
+        background: rgba(107, 127, 163, 0.1);
+        border: 1px solid rgba(107, 127, 163, 0.2);
+      }
+      .file-info {
+        overflow: hidden;
+      }
+      .file-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+      }
+      .file-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+      .file-meta .sep {
+        opacity: 0.4;
+      }
+      .file-id {
+        font-size: 11px;
+        color: var(--accent2);
+      }
+      .file-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        transition: all 0.2s;
+      }
+      .btn-icon:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(62, 207, 207, 0.06);
+      }
+      .btn-icon.copy:hover {
+        border-color: var(--accent2);
+        color: var(--accent2);
+        background: rgba(124, 111, 255, 0.06);
+      }
+      .btn-icon.delete:hover {
+        border-color: var(--accent3);
+        color: var(--accent3);
+        background: rgba(255, 107, 138, 0.06);
+      }
+      .share-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(62, 207, 207, 0.05);
+        border: 1px solid rgba(62, 207, 207, 0.15);
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--accent);
+        font-family: "DM Mono", monospace;
+        cursor: pointer;
+        transition: all 0.2s;
+        word-break: break-all;
+      }
+      .share-link:hover {
+        background: rgba(62, 207, 207, 0.1);
+        border-color: rgba(62, 207, 207, 0.3);
+      }
+      .empty-state {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--muted);
+        font-size: 13px;
+        border: 1px dashed rgba(107, 127, 163, 0.15);
+        border-radius: 16px;
+      }
+      .empty-state .empty-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+        opacity: 0.4;
+      }
+      .empty-state p {
+        line-height: 1.6;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 40px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 18px;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 26px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 2px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 64px;
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 1px;
+      }
+      footer span {
+        color: var(--accent);
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @media (max-width: 600px) {
+        .stats-row {
+          gap: 8px;
+        }
+        .stat-val {
+          font-size: 20px;
+        }
+        header {
+          padding: 12px 16px;
+        }
+        .file-card {
+          grid-template-columns: 40px 1fr auto;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="wrapper">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">⬆️</div>
+          <div>
+            <div class="logo-text">Debotz <span>UP</span></div>
+            <div class="logo-tagline">Cloud File Sharing</div>
+          </div>
+        </div>
+        <div class="header-badge">
+          <div class="pulse-dot"></div>
+          Pixeldrain CDN
+        </div>
+      </header>
+
+      <div class="dev-badge" id="devBadge">
+        ⚠️&nbsp; <strong>Mode Localhost</strong> — menggunakan CORS proxy untuk
+        testing. Deploy ke Vercel/Netlify agar upload langsung tanpa proxy.
+      </div>
+
+      <div class="hero">
+        <h1>
+          <div class="line1">Upload &amp; Share</div>
+          <div class="line2">Instantly.</div>
+        </h1>
+        <p>Powered by Pixeldrain · Fast, reliable, no sign-up needed</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val" id="statCount">0</div>
+          <div class="stat-label">Files Uploaded</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statSize">0 B</div>
+          <div class="stat-label">Total Size</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statLinks">0</div>
+          <div class="stat-label">Share Links</div>
+        </div>
+      </div>
+
+      <div class="upload-zone" id="dropZone">
+        <div class="upload-icon">🚀</div>
+        <h2>Drop files here</h2>
+        <p>Drag &amp; drop any file, or browse from your device</p>
+        <button
+          class="btn-upload"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          <span>📂</span> Browse Files
+        </button>
+        <input type="file" id="fileInput" multiple />
+      </div>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-header">
+          <span class="progress-filename" id="progressName">Uploading...</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <div class="icon">📁</div>
+        Uploaded Files
+        <span class="section-badge" id="fileCountBadge">0 files</span>
+      </div>
+
+      <div id="fileList">
+        <div class="empty-state">
+          <div class="empty-icon">☁️</div>
+          <p>No files yet.<br />Upload something to get your share link!</p>
+        </div>
+      </div>
+
+      <footer>
+        Made with ❤️ by <span>Debotz UP</span> · Powered by Pixeldrain CDN
+      </footer>
+    </div>
+
+    <div class="toast" id="toast">
+      <span id="toastIcon"></span><span id="toastMsg"></span>
+    </div>
+
+    <script>
+      const API_KEY = "4ace14e5-1427-4ad4-ae6d-e403b97c8d2d";
+      const IS_LOCAL = ["localhost", "127.0.0.1", "0.0.0.0", ""].includes(
+        location.hostname
+      );
+      const CORS_PROXY = "https://corsproxy.io/?url=";
+
+      if (IS_LOCAL) document.getElementById("devBadge").classList.add("show");
+
+      let uploadedFiles = JSON.parse(
+        localStorage.getItem("debotz_files") || "[]"
+      );
+      renderFiles();
+      updateStats();
+
+      document.getElementById("fileInput").addEventListener("change", (e) => {
+        [...e.target.files].forEach(uploadFile);
+        e.target.value = "";
+      });
+      const dz = document.getElementById("dropZone");
+      dz.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dz.classList.add("drag-over");
+      });
+      dz.addEventListener("dragleave", () => dz.classList.remove("drag-over"));
+      dz.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dz.classList.remove("drag-over");
+        [...e.dataTransfer.files].forEach(uploadFile);
+      });
+
+      async function uploadFile(file) {
+        const pw = document.getElementById("progressWrap");
+        const fill = document.getElementById("progressFill");
+        const pct = document.getElementById("progressPct");
+        const pname = document.getElementById("progressName");
+
+        pname.textContent = file.name;
+        fill.style.width = "0%";
+        pct.textContent = "0%";
+        pw.classList.add("show");
+
+        let fake = 0,
+          ticker = null;
+        const startFake = () => {
+          ticker = setInterval(() => {
+            fake = Math.min(fake + Math.random() * 5 + 1, 90);
+            fill.style.width = fake + "%";
+            pct.textContent = Math.round(fake) + "%";
+          }, 200);
+        };
+        const stopFake = () => {
+          clearInterval(ticker);
+          ticker = null;
+        };
+        const finish = () => {
+          stopFake();
+          fill.style.width = "100%";
+          pct.textContent = "100%";
+          setTimeout(() => pw.classList.remove("show"), 1200);
+        };
+
+        try {
+          const encodedName = encodeURIComponent(file.name);
+          const apiUrl = `https://pixeldrain.com/api/file/${encodedName}`;
+          let data;
+
+          if (IS_LOCAL) {
+            /* ── LOCAL DEV: route through corsproxy.io ─────────────────────
+         corsproxy.io adds Access-Control-Allow-Origin to the response,
+         so the browser no longer blocks it.                           */
+            startFake();
+            const resp = await fetch(CORS_PROXY + encodeURIComponent(apiUrl), {
+              method: "PUT",
+              headers: { Authorization: "Basic " + btoa(":" + API_KEY) },
+              body: file,
+            });
+            stopFake();
+            if (!resp.ok) {
+              const e = await resp.json().catch(() => ({}));
+              throw new Error(e.message || "HTTP " + resp.status);
+            }
+            data = await resp.json();
+          } else {
+            /* ── PRODUCTION: Route through backend proxy ──────────────────
+         The backend (Vercel) handles upload to Pixeldrain.
+         API key is stored in environment variable (secure).         */
+            data = await new Promise((res, rej) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open(
+                "PUT",
+                `/api/upload?filename=${encodedName}`,
+                true
+              );
+              xhr.upload.addEventListener("progress", (e) => {
+                if (e.lengthComputable) {
+                  const p = Math.round((e.loaded / e.total) * 95);
+                  fill.style.width = p + "%";
+                  pct.textContent = p + "%";
+                }
+              });
+              xhr.addEventListener("load", () => {
+                if (xhr.status === 200 || xhr.status === 201) {
+                  try {
+                    res(JSON.parse(xhr.responseText));
+                  } catch (e) {
+                    rej(new Error("Parse error"));
+                  }
+                } else {
+                  let m = "HTTP " + xhr.status;
+                  try {
+                    m = JSON.parse(xhr.responseText).message || m;
+                  } catch (_) {}
+                  rej(new Error(m));
+                }
+              });
+              xhr.addEventListener("error", () =>
+                rej(new Error("Network error"))
+              );
+              xhr.send(file);
+            });
+          }
+
+          finish();
+          const entry = {
+            id: data.id,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            date: new Date().toISOString(),
+            link: `https://pixeldrain.com/u/${data.id}`,
+          };
+          uploadedFiles.unshift(entry);
+          localStorage.setItem("debotz_files", JSON.stringify(uploadedFiles));
+          updateStats();
+          renderFiles();
+          showToast("success", "✅", `${file.name} berhasil diupload!`);
+        } catch (err) {
+          stopFake();
+          pw.classList.remove("show");
+          console.error("[Debotz UP]", err);
+          showToast("error", "❌", err.message || "Upload gagal. Coba lagi.");
+        }
+      }
+
+      function renderFiles() {
+        const list = document.getElementById("fileList");
+        document.getElementById("fileCountBadge").textContent =
+          uploadedFiles.length + " files";
+        if (!uploadedFiles.length) {
+          list.innerHTML =
+            '<div class="empty-state"><div class="empty-icon">☁️</div><p>No files yet.<br>Upload something to get your share link!</p></div>';
+          return;
+        }
+        list.innerHTML = uploadedFiles
+          .map(
+            (f, i) => `
+    <div class="file-card">
+      <div class="file-thumb ${tc(f.type)}">${em(f.type)}</div>
+      <div class="file-info">
+        <div class="file-name">${esc(f.name)}</div>
+        <div class="file-meta">
+          <span>${fs(f.size)}</span><span class="sep">·</span>
+          <span>${fd(f.date)}</span><span class="sep">·</span>
+          <span class="file-id">ID: ${f.id}</span>
+        </div>
+        <div class="share-link" onclick="cl('${f.link}')">
+          <span>🔗</span><span>${f.link}</span>
+          <span style="margin-left:auto;color:var(--muted);font-size:11px">Salin</span>
+        </div>
+      </div>
+      <div class="file-actions">
+        <a href="${
+          f.link
+        }" target="_blank"><button class="btn-icon" title="Buka">↗</button></a>
+        <button class="btn-icon copy"   onclick="cl('${
+          f.link
+        }')" title="Salin">⎘</button>
+        <button class="btn-icon delete" onclick="rf(${i})" title="Hapus">✕</button>
+      </div>
+    </div>`
+          )
+          .join("");
+      }
+
+      function cl(link) {
+        navigator.clipboard.writeText(link).catch(() => {
+          const t = document.createElement("textarea");
+          t.value = link;
+          document.body.appendChild(t);
+          t.select();
+          document.execCommand("copy");
+          document.body.removeChild(t);
+        });
+        showToast("success", "📋", "Link berhasil disalin!");
+      }
+      function rf(i) {
+        uploadedFiles.splice(i, 1);
+        localStorage.setItem("debotz_files", JSON.stringify(uploadedFiles));
+        updateStats();
+        renderFiles();
+        showToast("success", "🗑️", "File dihapus dari daftar.");
+      }
+      function updateStats() {
+        document.getElementById("statCount").textContent = uploadedFiles.length;
+        document.getElementById("statSize").textContent = fs(
+          uploadedFiles.reduce((a, f) => a + (f.size || 0), 0)
+        );
+        document.getElementById("statLinks").textContent = uploadedFiles.length;
+      }
+      function fs(b) {
+        if (!b) return "0 B";
+        const k = 1024,
+          s = ["B", "KB", "MB", "GB"],
+          i = Math.floor(Math.log(b) / Math.log(k));
+        return parseFloat((b / Math.pow(k, i)).toFixed(1)) + " " + s[i];
+      }
+      function fd(iso) {
+        return new Date(iso).toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      }
+      function tc(m) {
+        if (!m) return "other";
+        if (m.startsWith("image/")) return "img";
+        if (m.startsWith("video/")) return "vid";
+        if (m.includes("zip") || m.includes("rar")) return "zip";
+        if (m.includes("pdf") || m.includes("doc") || m.includes("text"))
+          return "doc";
+        return "other";
+      }
+      function em(m) {
+        if (!m) return "📄";
+        if (m.startsWith("image/")) return "🖼️";
+        if (m.startsWith("video/")) return "🎬";
+        if (m.startsWith("audio/")) return "🎵";
+        if (m.includes("zip") || m.includes("rar")) return "📦";
+        if (m.includes("pdf")) return "📕";
+        if (m.includes("doc")) return "📝";
+        if (m.includes("sheet") || m.includes("csv")) return "📊";
+        return "📄";
+      }
+      function esc(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      let toastTimer;
+      function showToast(type, icon, msg) {
+        const t = document.getElementById("toast");
+        document.getElementById("toastIcon").textContent = icon;
+        document.getElementById("toastMsg").textContent = msg;
+        t.className = "toast show " + type;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "buildCommand": "echo 'Static site, no build needed'",
+  "outputDirectory": ".",
+  "env": {
+    "PIXELDRAIN_API_KEY": "@pixeldrain_api_key"
+  }
+}

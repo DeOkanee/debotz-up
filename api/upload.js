@@ -26,6 +26,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Filename required" });
     }
 
+    // Convert request stream to buffer
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const fileBuffer = Buffer.concat(chunks);
+
+    if (fileBuffer.length === 0) {
+      return res.status(400).json({ error: "No file data received" });
+    }
+
     // Upload ke Pixeldrain API
     const pixeldrainUrl = `https://pixeldrain.com/api/file/${encodeURIComponent(filename)}`;
     const auth = Buffer.from(`:${apiKey}`).toString("base64");
@@ -34,9 +45,8 @@ export default async function handler(req, res) {
       method: "PUT",
       headers: {
         Authorization: `Basic ${auth}`,
-        "Content-Type": "application/octet-stream",
       },
-      body: req.body,
+      body: fileBuffer,
     });
 
     if (!response.ok) {
